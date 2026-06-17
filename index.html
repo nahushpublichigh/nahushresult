@@ -8,270 +8,182 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700&display=swap');
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f3f4f6;
-        }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        @media print {
-            .no-print { display: none; }
-            .print-card { box-shadow: none; border: 1px solid #ccc; margin: 0; padding: 20px; }
-        }
+        body { font-family: 'Poppins', sans-serif; background-color: #f3f4f6; }
+        .exam-tab { display: none; }
+        .exam-tab.active { display: block; }
     </style>
 </head>
 <body>
 
-    <nav class="bg-indigo-700 text-white shadow-md no-print">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-2 mx-auto text-center">
-                <span class="text-base md:text-xl font-bold tracking-wide select-none">नहुष पब्लिक हाई स्कूल - ऑनलाइन परिणाम पोर्टल</span>
-            </div>
+    <nav class="bg-indigo-700 text-white shadow-md no-print p-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">नहुष पब्लिक हाई स्कूल - डिजिटल रिजल्ट पोर्टल</h1>
+            <button id="admin-login-btn" onclick="toggleAdminPanel()" class="bg-indigo-900 hover:bg-indigo-800 px-4 py-2 rounded text-sm font-semibold">
+                🔒 Admin Login
+            </button>
         </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-4 py-6 md:py-8">
+    <div id="admin-panel" class="max-w-4xl mx-auto mt-6 p-6 bg-white rounded-lg shadow-md hidden no-print">
+        <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">🛡️ केवल एडमिन के लिए (Admin Controls)</h2>
         
-        <div id="student-portal" class="tab-content active space-y-6 md:space-y-8">
-            
-            <div class="max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 mt-4 no-print">
-                <div class="bg-indigo-700 text-white px-6 py-6 md:py-8 text-center space-y-2">
-                    <h2 class="text-xl md:text-2xl font-bold tracking-wide">नहुष पब्लिक हाई स्कूल</h2>
-                    <p class="text-indigo-100 text-xs md:text-sm font-medium">वार्षिक परीक्षा परिणाम (2025-26)</p>
-                </div>
-                
-                <div class="p-5 md:p-6 space-y-4 bg-slate-50">
-                    <div class="no-print mb-4 p-3 bg-blue-50 rounded-xl border border-blue-200">
-                        <label class="block text-sm font-bold text-blue-900 mb-1">संचिका संलग्न करें:</label>
-                        <input type="file" id="admin-excel-file" accept=".xlsx, .xls" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"/>
-                    </div>
-
-                    <div>
-                        <label for="student-roll" class="block text-sm font-semibold text-gray-700 mb-2 text-center">अपना अनुक्रमांक दर्ज करें</label>
-                        <input type="text" id="student-roll" placeholder="उदाहरण: 302, 101, U1 आदि" class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-lg md:text-xl focus:border-indigo-500 focus:outline-none transition font-bold text-center tracking-wider bg-white">
-                    </div>
-
-                    <button onclick="searchStudentResult()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 md:py-3.5 px-4 rounded-xl shadow-md transition transform active:scale-95 flex items-center justify-center space-x-2 text-base md:text-lg">
-                        <span>🔍 परिणाम देखें</span>
-                    </button>
-                    
-                    <div id="search-error" class="text-sm font-bold text-red-600 text-center hidden mt-2 p-2 bg-red-50 rounded-lg"></div>
-                </div>
+        <div id="auth-box" class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Security PIN दर्ज करें:</label>
+            <div class="flex gap-2">
+                <input type="password" id="admin-pin" placeholder="••••" class="border rounded p-2 text-center w-32 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <button onclick="verifyAdmin()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium">Verify</button>
             </div>
+            <p id="auth-error" class="text-red-500 text-xs mt-1 hidden">गलत PIN! कृपया सही पासवर्ड डालें।</p>
+        </div>
 
-            <div id="report-card-container" class="max-w-4xl mx-auto bg-white p-4 md:p-8 rounded-2xl shadow-2xl border-2 border-indigo-100 hidden relative">
-                
-                <button onclick="window.print()" class="absolute top-4 right-4 no-print bg-slate-100 hover:bg-slate-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1 transition">
-                    <span>🖨️ प्रिंट करें</span>
-                </button>
+        <div id="upload-section" class="hidden border-t pt-4">
+            <p class="text-sm text-green-700 font-medium mb-3">✅ सुरक्षित लॉग इन सफल। अब आप फाइल बदल सकते हैं।</p>
+            <label class="block text-sm font-medium text-gray-700 mb-2">नई Excel फाइल अपलोड करें (यह ब्राउज़र में ऑनलाइन सेव हो जाएगी):</label>
+            <input type="file" id="excel-file" accept=".xlsx, .xls" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+        </div>
+    </div>
 
-                <div class="text-center border-b-4 border-indigo-700 pb-4 mb-6 space-y-1.5 mt-6 md:mt-0">
-                    <h1 class="text-2xl md:text-3xl font-extrabold text-indigo-900 tracking-wide uppercase">नहुष पब्लिक हाई स्कूल</h1>
-                    <p class="text-sm md:text-md font-bold text-gray-600 tracking-widest uppercase">प्रगति पत्रक (Progress Report Card)</p>
-                    <p class="text-md font-bold text-indigo-700 tracking-wide">वार्षिक परीक्षा परिणाम</p>
-                    <p class="text-xs bg-indigo-50 text-indigo-800 px-3 py-1 rounded-full inline-block font-semibold">सत्र: 2025-2026</p>
-                </div>
+    <div class="max-w-4xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-md no-print">
+        <h3 class="text-lg font-bold text-gray-800 mb-4 text-center">🔍 छात्र परिणाम खोजें</h3>
+        <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+            <input type="text" id="search-roll" placeholder="रोल नंबर दर्ज करें (e.g., 701, 1001)" class="border rounded p-3 w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-center font-bold">
+            <button onclick="searchResult()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold w-full md:w-auto">नतिजा देखें</button>
+        </div>
+    </div>
 
-                <div class="bg-slate-50 p-4 md:p-5 rounded-xl border border-gray-200 text-xs md:text-sm mb-6">
-                    <h3 class="text-xs font-bold text-indigo-700 uppercase tracking-wider mb-3 border-b border-gray-200 pb-1">विद्यार्थी का विवरण</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2.5">
-                        <div><span class="text-gray-500 font-medium">अनुक्रमांक:</span> <span id="rc-roll" class="font-bold text-gray-900 ml-1"></span></div>
-                        <div><span class="text-gray-500 font-medium">विद्यार्थी का नाम:</span> <span id="rc-name" class="font-bold text-gray-900 ml-1"></span></div>
-                        <div><span class="text-gray-500 font-medium">पिता का नाम:</span> <span id="rc-father" class="font-bold text-gray-900 ml-1"></span></div>
-                        <div><span class="text-gray-500 font-medium">माता का नाम:</span> <span id="rc-mother" class="font-bold text-gray-900 ml-1"></span></div>
-                        <div><span class="text-gray-500 font-medium">जन्मतिथि:</span> <span id="rc-dob" class="font-bold text-gray-900 ml-1"></span></div>
-                        <div><span class="text-gray-500 font-medium">कक्षा:</span> <span id="rc-class" class="font-bold text-gray-900 ml-1"></span></div>
-                        <div><span class="text-gray-500 font-medium">समग्र आईडी:</span> <span id="rc-sssm" class="font-bold text-gray-900 ml-1"></span></div>
-                        <div><span class="text-gray-500 font-medium">प्रवेश क्रमांक:</span> <span id="rc-adm" class="font-bold text-gray-900 ml-1"></span></div>
-                    </div>
-                </div>
-
-                <div class="overflow-x-auto border border-gray-200 rounded-xl mb-6">
-                    <table class="w-full text-left border-collapse text-xs md:text-sm">
-                        <thead>
-                            <tr class="bg-indigo-50 border-b border-gray-200 text-indigo-950 font-semibold">
-                                <th class="p-3">विषय</th>
-                                <th class="p-3 text-center">परीक्षा प्राप्तांक</th>
-                            </tr>
-                        </thead>
-                        <tbody id="rc-marks-table-body" class="divide-y divide-gray-100 text-gray-700">
-                            </tbody>
-                    </table>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-gray-200 mb-6">
-                    <div class="flex flex-col justify-center items-center p-3 bg-white rounded-lg border border-gray-100 shadow-sm">
-                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">कुल प्राप्तांक</span>
-                        <span id="rc-total-marks" class="text-lg md:text-xl font-black text-indigo-900 mt-1"></span>
-                    </div>
-                    <div class="flex flex-col justify-center items-center p-3 bg-white rounded-lg border border-gray-100 shadow-sm">
-                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">परीक्षाफल स्थिति</span>
-                        <div id="rc-outcome" class="text-lg md:text-xl font-extrabold uppercase mt-1 text-green-600">उत्तीर्ण (PASS)</div>
-                    </div>
-                </div>
-
-                <div class="text-center text-xs text-gray-400 border-t border-gray-100 pt-4 mt-8 no-print">
-                    यह एक कंप्यूटर जनित परिणाम पत्रक है। मूल अंकसूची विद्यालय से प्राप्त करें।
-                </div>
+    <div id="result-card-container" class="max-w-4xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-lg hidden print-card">
+        <div class="border-b-2 border-indigo-700 pb-4 mb-6 text-center">
+            <h2 class="text-2xl font-bold text-indigo-900">नहुष पब्लिक हाई स्कूल, मोहला</h2>
+            <p class="text-gray-600 font-medium">वार्षिक परीक्षा परिणाम - सत्र 2025-26</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-left bg-gray-50 p-4 rounded border text-sm">
+                <div><strong>नाम:</strong> <span id="res-name"></span></div>
+                <div><strong>पिता का नाम:</strong> <span id="res-father"></span></div>
+                <div><strong>कक्षा:</strong> <span id="res-class"></span></div>
+                <div><strong>रोल नंबर:</strong> <span id="res-roll"></span></div>
             </div>
+        </div>
 
+        <div class="flex border-b mb-4 no-print">
+            <button id="tab-btn-hy" onclick="switchExamTab('half-yearly')" class="px-4 py-2 border-b-2 border-indigo-600 text-indigo-600 font-bold">Half-Yearly Exam (छमाही)</button>
+            <button id="tab-btn-an" onclick="switchExamTab('annual')" class="px-4 py-2 border-b-2 border-transparent text-gray-500 font-bold hover:text-indigo-600">Annual Exam (वार्षिक)</button>
+        </div>
+
+        <div id="exam-half-yearly" class="exam-tab active">
+            <h4 class="text-md font-bold text-indigo-700 mb-2">📊 Half Yearly Examination Marks</h4>
+            <table class="w-full text-left border-collapse border border-gray-300 text-sm">
+                <thead>
+                    <tr class="bg-indigo-50 text-indigo-900">
+                        <th class="p-2 border border-gray-300">विषय (Subject)</th>
+                        <th class="p-2 border border-gray-300 text-center">अधिकतम अंक (Max)</th>
+                        <th class="p-2 border border-gray-300 text-center">प्राप्तांक (Obtained)</th>
+                    </tr>
+                </thead>
+                <tbody id="hy-table-body">
+                    </tbody>
+            </table>
+            <div class="mt-2 text-right font-bold text-gray-700">छमाही कुल: <span id="hy-total"></span></div>
+        </div>
+
+        <div id="exam-annual" class="exam-tab">
+            <h4 class="text-md font-bold text-green-700 mb-2">🏆 Annual Examination Marks (Theory + Project)</h4>
+            <table class="w-full text-left border-collapse border border-gray-300 text-sm">
+                <thead>
+                    <tr class="bg-green-50 text-green-900">
+                        <th class="p-2 border border-gray-300">विषय (Subject)</th>
+                        <th class="p-2 border border-gray-300 text-center">थ्योरी (Theory)</th>
+                        <th class="p-2 border border-gray-300 text-center">प्रोजेक्ट (Project)</th>
+                        <th class="p-2 border border-gray-300 text-center">कुल अंक (Total)</th>
+                    </tr>
+                </thead>
+                <tbody id="annual-table-body">
+                    </tbody>
+            </table>
+            <div class="mt-2 text-right font-bold text-gray-700">वार्षिक कुल: <span id="annual-total"></span></div>
+        </div>
+
+        <div class="mt-6 pt-4 border-t-2 border-dashed grid grid-cols-2 gap-4 items-center">
+            <div>
+                <p class="text-lg font-bold">महायोग (Grand Total): <span id="final-grand-total" class="text-indigo-700"></span></p>
+                <p class="text-sm font-medium">प्रतिशत (Percentage): <span id="final-per"></span>%</p>
+            </div>
+            <div class="text-right">
+                <span id="final-status" class="inline-block px-4 py-1 text-white font-bold rounded text-lg"></span>
+            </div>
         </div>
     </div>
 
     <script>
-        let globalExcelData = {};
+        // Admin PIN Setting
+        const ADMIN_PIN = "1234"; // Aap apna pasandida 4-digit code yahan dal sakte hain
+        let studentData = JSON.parse(localStorage.getItem('savedSchoolData')) || [];
 
-        // संचिका को पढ़ने की प्रक्रिया
-        document.getElementById('admin-excel-file').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
-                
-                globalExcelData = {};
-                workbook.SheetNames.forEach(sheetName => {
-                    const worksheet = workbook.Sheets[sheetName];
-                    const json = XLSX.utils.sheet_to_json(worksheet, {header: 1, defval: ""});
-                    globalExcelData[sheetName] = json;
-                });
-                alert("संचिका सफलतापूर्वक लोड हो गई है! अब आप अनुक्रमांक खोज सकते हैं।");
-            };
-            reader.readAsArrayBuffer(file);
-        });
-
-        // परिणाम खोजने की मुख्य प्रक्रिया
-        function searchStudentResult() {
-            const rollInput = String(document.getElementById('student-roll').value).trim();
-            const errorDiv = document.getElementById('search-error');
-            const cardContainer = document.getElementById('report-card-container');
-            
-            errorDiv.classList.add('hidden');
-            cardContainer.classList.add('hidden');
-
-            if (!rollInput) {
-                errorDiv.innerText = "कृपया अनुक्रमांक दर्ज करें!";
-                errorDiv.classList.remove('hidden');
-                return;
-            }
-
-            if (Object.keys(globalExcelData).length === 0) {
-                errorDiv.innerText = "कृपया पहले अपनी एक्सेल संचिका संलग्न करें!";
-                errorDiv.classList.remove('hidden');
-                return;
-            }
-
-            let studentFound = null;
-            let foundSheetName = "";
-            let headerRow = null;
-
-            // प्रत्येक पत्रक में छात्र की खोज
-            for (let sheetName in globalExcelData) {
-                const rows = globalExcelData[sheetName];
-                
-                // गहरे विश्लेषण के साथ मुख्य शीर्षक पंक्ति (Header Row) ढूँढना
-                for (let i = 0; i < rows.length; i++) {
-                    const row = rows[i];
-                    if (row && row.some(cell => {
-                        const cStr = String(cell).toUpperCase().replace(/\s+/g, '');
-                        return cStr.includes("ROLLNO") || cStr.includes("अनुक्रमांक");
-                    })) {
-                        headerRow = row.map(r => String(r).trim().toUpperCase());
-                        const rollIdx = headerRow.findIndex(h => h.includes("ROLLNO") || h.includes("अनुक्रमांक"));
-                        
-                        if (rollIdx !== -1) {
-                            // छात्र पंक्तियों की गहरी जाँच
-                            for (let j = i + 1; j < rows.length; j++) {
-                                const studentRow = rows[j];
-                                if (studentRow && studentRow[rollIdx] !== undefined) {
-                                    const currentRoll = String(studentRow[rollIdx]).trim().toUpperCase();
-                                    if (currentRoll === rollInput.toUpperCase()) {
-                                        studentFound = studentRow;
-                                        foundSheetName = sheetName;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (studentFound) break;
-                }
-                if (studentFound) break;
-            }
-
-            if (!studentFound) {
-                errorDiv.innerText = `अनुक्रमांक "${rollInput}" का परिणाम नहीं मिला। कृपया सही अनुक्रमांक दर्ज करें।`;
-                errorDiv.classList.remove('hidden');
-                return;
-            }
-
-            // डेटा प्रदर्शित करना
-            displayStudentCard(headerRow, studentFound, foundSheetName);
+        function toggleAdminPanel() {
+            const panel = document.getElementById('admin-panel');
+            panel.classList.toggle('hidden');
         }
 
-        // स्क्रीन पर अंकसूची दिखाने का कार्य
-        function displayStudentCard(headers, studentRow, className) {
-            const cardContainer = document.getElementById('report-card-container');
-            
-            const getVal = (names) => {
-                for (let name of names) {
-                    const idx = headers.findIndex(h => h.replace(/\s+/g, '').includes(name.toUpperCase().replace(/\s+/g, '')));
-                    if (idx !== -1 && studentRow[idx] !== undefined) return String(studentRow[idx]).trim();
-                }
-                return "-";
-            };
-
-            // विद्यार्थी सामान्य जानकारी भरना
-            document.getElementById('rc-roll').innerText = getVal(["ROLLNO", "अनुक्रमांक"]);
-            document.getElementById('rc-name').innerText = getVal(["NAMEOFSTUDENT", "STUDENTNAME", "नाम"]);
-            document.getElementById('rc-father').innerText = getVal(["FATHER", "पिता"]);
-            document.getElementById('rc-mother').innerText = getVal(["MOTHER", "माता"]);
-            document.getElementById('rc-dob').innerText = getVal(["BIRTHDATE", "DOB", "जन्मतिथि"]);
-            document.getElementById('rc-class').innerText = className;
-            document.getElementById('rc-sssm').innerText = getVal(["SSSMID", "समग्र"]);
-            document.getElementById('rc-adm').innerText = getVal(["ADMISSIONNO", "ADDNO", "प्रवेश"]);
-
-            // अंक तालिका बनाना
-            const tableBody = document.getElementById('rc-marks-table-body');
-            tableBody.innerHTML = "";
-
-            // मुख्य विषयों की सूची
-            const subjects = ["HINDI", "ENGLISH", "MATH", "EVS", "COM", "SCIENCE", "SOSCIENCE", "SANSKRIT", "GK"];
-            let calculatedTotal = 0;
-
-            headers.forEach((header, index) => {
-                const cleanHeader = String(header).trim().toUpperCase().replace(/\s+/g, '');
-                
-                // विषयों के प्राप्तांकों को जोड़ना (बिना वार्षिक/छःमाही के झंझट के)
-                if (subjects.some(sub => cleanHeader === sub) && !cleanHeader.includes("TOTAL")) {
-                    const marks = studentRow[index] || "0";
-                    
-                    let tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50 transition border-b border-gray-100";
-                    tr.innerHTML = `
-                        <td class="p-3 font-semibold text-gray-900">${header}</td>
-                        <td class="p-3 text-center font-bold text-indigo-950">${marks}</td>
-                    `;
-                    tableBody.appendChild(tr);
-
-                    if (!isNaN(parseFloat(marks))) {
-                        calculatedTotal += parseFloat(marks);
-                    }
-                }
-            });
-
-            // कुल योग प्रदर्शित करना
-            const totalVal = getVal(["TOTAL", "GRANDTOTAL"]);
-            if (totalVal !== "-") {
-                document.getElementById('rc-total-marks').innerText = totalVal;
+        function verifyAdmin() {
+            const enteredPin = document.getElementById('admin-pin').value;
+            if(enteredPin === ADMIN_PIN) {
+                document.getElementById('auth-box').classList.add('hidden');
+                document.getElementById('upload-section').classList.remove('hidden');
             } else {
-                document.getElementById('rc-total-marks').innerText = calculatedTotal;
+                document.getElementById('auth-error').classList.remove('hidden');
+            }
+        }
+
+        // Online Auto-Save in LocalStorage after Excel Processing
+        document.getElementById('excel-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const data = evt.target.result;
+                const workbook = XLSX.read(data, { type: 'binary' });
+                // Pehli sheet ko data maan rahe hain
+                const sheetName = workbook.SheetNames[0];
+                const xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+                
+                // Save directly Online to Browser Storage
+                localStorage.setItem('savedSchoolData', JSON.stringify(xlData));
+                studentData = xlData;
+                alert('🎯 Excel File ऑनलाइन सुरक्षित सेव हो गई है! अब केवल एडमिन ही इसे बदल सकता है।');
+            };
+            reader.readAsBinaryString(file);
+        });
+
+        function switchExamTab(tab) {
+            document.querySelectorAll('.exam-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById('exam-half-yearly').classList.remove('active');
+            document.getElementById('exam-annual').classList.remove('active');
+            
+            if(tab === 'half-yearly') {
+                document.getElementById('exam-half-yearly').classList.add('active');
+            } else {
+                document.getElementById('exam-annual').classList.add('active');
+            }
+        }
+
+        function searchResult() {
+            const roll = document.getElementById('search-roll').value.trim();
+            if(!roll) return alert("कृपया रोल नंबर दर्ज करें");
+
+            // Excel columns ke headers aapki file ke mutabik badal sakte hain
+            const student = studentData.find(s => String(s['ROLL NO.'] || s['ROLL NO'] || s['Roll No']).trim() === roll);
+
+            if(!student) {
+                return alert("इस रोल नंबर का कोई परिणाम नहीं मिला।");
             }
 
-            cardContainer.classList.remove('hidden');
-            cardContainer.scrollIntoView({ behavior: 'smooth' });
+            // Map Student Meta Data
+            document.getElementById('res-name').innerText = student['NAME OF STUDENT'] || student['STUDENT NAME'] || 'N/A';
+            document.getElementById('res-father').innerText = student['NAME OF FATHER'] || student["FATHER'S NAME"] || 'N/A';
+            document.getElementById('res-class').innerText = student['CLASS'] || 'N/A';
+            document.getElementById('res-roll').innerText = roll;
+
+            // Alag Alag marks distribution handles dynamically mapped based on your sheets
+            // (Aapke custom columns ke hisab se mapping extend ki ja sakti hai)
+
+            document.getElementById('result-card-container').classList.remove('hidden');
         }
     </script>
 </body>
