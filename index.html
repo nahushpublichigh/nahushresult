@@ -21,7 +21,7 @@
 
     <nav class="bg-indigo-700 text-white shadow-md no-print p-4">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-            <h1 class="text-xl font-bold tracking-wide">नहुष पब्लिक हाई स्कूल, मोहला</h1>
+            <h1 class="text-xl font-bold tracking-wide">नहुष Public High School, मोहला</h1>
             <button id="admin-login-btn" onclick="toggleAdminPanel()" class="bg-indigo-900 hover:bg-indigo-955 px-4 py-2 rounded text-sm font-semibold transition shadow border border-indigo-500/30">
                 🔒 एडमिन लॉगिन (Upload Excel)
             </button>
@@ -52,7 +52,7 @@
         <h3 class="text-xl font-bold text-gray-800 mb-2">🔍 छात्र परीक्षा परिणाम पोर्टल (सत्र 2025-26)</h3>
         <p class="text-sm text-gray-500 mb-6">कृपया अपना सही अनुक्रमांक (Roll Number) भरकर परिणाम देखें</p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center items-center max-w-md mx-auto">
-            <input type="text" id="search-roll" placeholder="रोल नंबर डालें (जैसे: 105, 601, 701)" class="border border-gray-300 rounded-lg p-3 w-full font-extrabold text-xl text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase tracking-wider">
+            <input type="text" id="search-roll" placeholder="रोल नंबर डालें (जैसे: 105, 302, 405)" class="border border-gray-300 rounded-lg p-3 w-full font-extrabold text-xl text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase tracking-wider">
             <button onclick="searchResult()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-bold w-full sm:w-auto transition shadow-md whitespace-nowrap">नतीजा देखें</button>
         </div>
     </div>
@@ -61,8 +61,7 @@
         
         <div class="border-b-4 border-indigo-700 pb-4 mb-6 text-center">
             <h2 class="text-2xl md:text-3xl font-black text-indigo-950 tracking-wide">नहुष पब्लिक हाई स्कूल, मोहला</h2>
-            <p class="text-xs md:text-sm text-gray-500 font-bold tracking-widest mt-1 uppercase">Block Majholi, Dist. Jabalpur (M.P.)</p>
-            <p class="text-md font-semibold text-indigo-700 bg-indigo-50 inline-block px-4 py-1 rounded-full mt-3">परीक्षा परिणाम सूची - सत्र 2025-26</p>
+            <p class="text-xs md:text-sm text-gray-500 font-bold tracking-widest mt-1 uppercase">वार्षिक परीक्षा परिणाम सूची - सत्र 2025-26</p>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mt-6 text-left bg-gray-50 p-4 rounded-xl border border-gray-200 text-sm">
                 <div class="p-1"><span class="text-gray-500 font-medium">छात्र का नाम:</span> <strong id="res-name" class="text-gray-900 block text-base font-bold"></strong></div>
@@ -81,14 +80,13 @@
             </button>
         </div>
 
-        <div id="exam-half-yearly" class="exam-tab active animate-fade-in">
-            <h4 class="text-base font-bold text-indigo-800 mb-3 flex items-center gap-2">🔹 अर्धवार्षिक परीक्षा प्राप्तांक (Out of 60)</h4>
+        <div id="exam-half-yearly" class="exam-tab active">
+            <h4 class="text-base font-bold text-indigo-800 mb-3 flex items-center gap-2">🔹 अर्धवार्षिक परीक्षा प्राप्तांक</h4>
             <div class="overflow-x-auto rounded-lg border border-gray-200">
                 <table class="w-full text-left border-collapse text-sm">
                     <thead>
                         <tr class="bg-indigo-700 text-white font-semibold">
                             <th class="p-3">विषय (Subject)</th>
-                            <th class="p-3 text-center w-36">अधिकतम अंक</th>
                             <th class="p-3 text-center w-36">प्राप्तांक (Marks)</th>
                         </tr>
                     </thead>
@@ -99,7 +97,7 @@
             <div class="mt-4 text-right bg-indigo-50 p-3 rounded-lg border border-indigo-100"><span class="text-gray-600 font-medium">छमाही कुल योग:</span> <strong id="hy-total" class="text-xl font-bold text-indigo-900 ml-2"></strong></div>
         </div>
 
-        <div id="exam-annual" class="exam-tab animate-fade-in">
+        <div id="exam-annual" class="exam-tab">
             <h4 class="text-base font-bold text-emerald-800 mb-3 flex items-center gap-2">🏆 वार्षिक परीक्षा प्राप्तांक (Theory + Project)</h4>
             <div class="overflow-x-auto rounded-lg border border-gray-200">
                 <table class="w-full text-left border-collapse text-sm">
@@ -127,7 +125,7 @@
     </div>
 
     <script>
-        const ADMIN_PIN = "1234"; // आपका मास्टर पासवर्ड पिन
+        const ADMIN_PIN = "1234"; // आपका एडमिन पासवर्ड
         let globalDatabase = JSON.parse(localStorage.getItem('nahushSchoolOnlineDB')) || [];
 
         function toggleAdminPanel() {
@@ -157,19 +155,25 @@
                 const workbook = XLSX.read(binaryData, { type: 'binary' });
                 let compiledRecords = [];
 
-                // आपकी सभी शीट्स (जैसे Class 6th, 7th, 8th etc.) को लूप करके डेटा एकसाथ कंबाइन करेगा
                 workbook.SheetNames.forEach(sheetName => {
-                    const rawSheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: "" });
+                    // Goshwara aur falan dhimkan format skip karein
+                    if (sheetName.toUpperCase().includes("GOSHWARA") || sheetName.toUpperCase().includes("MARKSHEET")) return;
+
+                    // Range:2 skip taaki upar ki design lines bypass ho jayein aur direct headers pakde
+                    const rawSheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: "", range: 2 });
                     
-                    // हेडर सफाई और रिकॉर्ड रिफाइनिंग
                     rawSheetData.forEach(row => {
                         let formattedRow = {};
                         Object.keys(row).forEach(key => {
-                            formattedRow[key.toString().trim().toUpperCase()] = row[key].toString().trim();
+                            // Column headers ke aage peeche ka space aur dot hatana
+                            let cleanKey = key.toString().trim().toUpperCase().replace(/\s+/g, '');
+                            formattedRow[cleanKey] = row[key].toString().trim();
                         });
                         
-                        // केवल वैलिड छात्र डेटा को स्टोर करना
-                        if(formattedRow['ROLL NO.'] || formattedRow['ROLL NO']) {
+                        // ROLL NO. check logic (Dot aur space bypass karke)
+                        let rollKey = Object.keys(formattedRow).find(k => k.includes("ROLLNO") || k.includes("अनुक्रमांक"));
+                        if(rollKey && formattedRow[rollKey]) {
+                            formattedRow['_MATCH_ROLL'] = formattedRow[rollKey].toUpperCase();
                             formattedRow['_ORIGINAL_CLASS'] = sheetName;
                             compiledRecords.push(formattedRow);
                         }
@@ -182,7 +186,7 @@
                     alert(`🎯 बधाई हो! एक्सेल फ़ाइल के सभी ${compiledRecords.length} छात्रों का डेटा ऑनलाइन सुरक्षित लोड हो गया है।`);
                     document.getElementById('admin-panel').classList.add('hidden');
                 } else {
-                    alert("❌ फ़ाइल में सही डेटा नहीं मिला। कृपया जांचें कि कॉलम में 'ROLL NO' लिखा है या नहीं।");
+                    alert("❌ फ़ाइल में सही डेटा नहीं मिला। कृपया जांचें कि कॉलम में 'ROLL NO.' लिखा है या नहीं।");
                 }
             };
             reader.readAsBinaryString(file);
@@ -214,74 +218,95 @@
                 return;
             }
 
-            // रोल नंबर मैच करने का लॉजिक (कड़क मैचिंग)
-            const matchedStudent = globalDatabase.find(s => {
-                const rKey = s['ROLL NO.'] || s['ROLL NO'] || "";
-                return rKey.toUpperCase() === rawRoll;
-            });
+            // Kaddak roll number matching algorithm
+            const matchedStudent = globalDatabase.find(s => s['_MATCH_ROLL'] === rawRoll);
 
             if(!matchedStudent) {
                 alert(`❌ अनुक्रमांक "${rawRoll}" का परिणाम नहीं मिला। कृपया एडमिन पैनल में सही एक्सेल शीट अपलोड करें या सही रोल नंबर दर्ज करें।`);
                 return;
             }
 
-            // छात्र बुनियादी जानकारी प्रदर्शन
-            document.getElementById('res-name').innerText = matchedStudent['NAME OF STUDENT'] || matchedStudent['STUDENT NAME'] || matchedStudent['NAME'] || 'N/A';
-            document.getElementById('res-father').innerText = matchedStudent['NAME OF FATHER'] || matchedStudent["FATHER'S NAME"] || matchedStudent['FATHER NAME'] || 'N/A';
-            document.getElementById('res-class').innerText = matchedStudent['CLASS'] || matchedStudent['_ORIGINAL_CLASS'] || 'N/A';
+            // Dynamic keys extract karne ka setup
+            const getFieldVal = (keywords) => {
+                let foundKey = Object.keys(matchedStudent).find(k => keywords.some(kw => k.includes(kw.toUpperCase())));
+                return foundKey ? matchedStudent[foundKey] : "N/A";
+            };
+
+            document.getElementById('res-name').innerText = getFieldVal(['STUDENTNAME', 'NAMEOFSTUDENT', 'NAME', 'नाम']);
+            document.getElementById('res-father').innerText = getFieldVal(['FATHER', 'पिता']);
+            document.getElementById('res-class').innerText = matchedStudent['_ORIGINAL_CLASS'] || 'N/A';
             document.getElementById('res-roll').innerText = rawRoll;
 
-            // विषयों की लिस्ट जो आपकी एक्सेल शीट के अनुसार खोजी जाएगी
-            const subjectsList = ['HINDI', 'ENGLISH', 'ENG', 'MATH', 'MATHS', 'SANSKRIT', 'SAN', 'SCIENCE', 'SCI', 'SO SCIENCE', 'SO. SCIENCE', 'SO SCI', 'SOCIAL SCIENCE', 'EVS', 'COM', 'COMP', 'COMPUTER', 'G.K.', 'GK'];
+            // Subjects array mapping
+            const subjectsMapping = [
+                { display: "HINDI", keys: ["HINDI", "HIN"] },
+                { display: "ENGLISH", keys: ["ENGLISH", "ENG"] },
+                { display: "SANSKRIT", keys: ["SANSKRIT", "SAN"] },
+                { display: "MATHEMATICS", keys: ["MATH", "MATHS"] },
+                { display: "SCIENCE", keys: ["SCIENCE", "SCI"] },
+                { display: "SOCIAL SCIENCE", keys: ["SOSCIENCE", "SOSCI", "SOCIALSCIENCE"] },
+                { display: "EVS", keys: ["EVS"] },
+                { display: "COMPUTER", keys: ["COMPUTER", "COMP", "COM"] }
+            ];
             
             let hyTableContent = "";
             let anTableContent = "";
             let hyTotalSum = 0;
             let anTotalSum = 0;
 
-            // पूरे एक्सेल के रिकॉर्ड को स्कैन करके छमाही और वार्षिक नंबरों को छांटना (Separation Logic)
-            subjectsList.forEach(sub => {
-                // 1. छमाही प्राप्तांक निकालें
-                if(matchedStudent[sub] !== undefined && matchedStudent[sub] !== "") {
-                    // सुनिश्चित करें कि यह वार्षिक टोटल वाला कॉलम न हो
-                    const marks = parseInt(matchedStudent[sub]) || 0;
+            let studentKeys = Object.keys(matchedStudent);
+
+            subjectsMapping.forEach(sub => {
+                // Vishay ki key dhundhna bina spaces ke
+                let mainKey = studentKeys.find(k => sub.keys.some(kw => k === kw));
+                
+                if(mainKey) {
+                    let keyIndex = studentKeys.indexOf(mainKey);
+                    
+                    // 1. Chhamahi Marks Extraction
+                    // Aapki sheet mein pehle column Chhamahi ka hota hai, fir Varshik Theory, fir PRO
+                    let hyMarks = matchedStudent[mainKey] || "0";
                     hyTableContent += `<tr class="hover:bg-gray-50 transition">
-                        <td class="p-3 font-semibold text-gray-700">${sub}</td>
-                        <td class="p-3 text-center text-gray-500">60</td>
-                        <td class="p-3 text-center font-bold text-indigo-700 text-base">${marks}</td>
+                        <td class="p-3 font-semibold text-gray-700">${sub.display}</td>
+                        <td class="p-3 text-center font-bold text-indigo-700 text-base">${hyMarks}</td>
                     </tr>`;
-                    hyTotalSum += marks;
+                    hyTotalSum += parseFloat(hyMarks) || 0;
+
+                    // 2. Varshik Theory aur Project Extraction
+                    // Agla column unke dynamic layout se uthayenge
+                    let theoryMarks = "0";
+                    let projectMarks = "0";
+                    
+                    // Agla column agar PRO_TH ya theory ho
+                    let nextKey1 = studentKeys[keyIndex + 1];
+                    if (nextKey1 && matchedStudent[nextKey1] !== "") {
+                        theoryMarks = matchedStudent[nextKey1];
+                    }
+                    
+                    let nextKey2 = studentKeys[keyIndex + 2];
+                    if (nextKey2 && nextKey2.includes("PRO")) {
+                        projectMarks = matchedStudent[nextKey2];
+                    }
+
+                    let subTotal = (parseFloat(theoryMarks) || 0) + (parseFloat(projectMarks) || 0);
+                    anTableContent += `<tr class="hover:bg-gray-50 transition">
+                        <td class="p-3 font-semibold text-gray-700">${sub.display}</td>
+                        <td class="p-3 text-center text-gray-600">${theoryMarks}</td>
+                        <td class="p-3 text-center text-emerald-600">${projectMarks !== "0" ? projectMarks : '-'}</td>
+                        <td class="p-3 text-center font-bold bg-emerald-50 text-emerald-700">${subTotal}</td>
+                    </tr>`;
+                    anTotalSum += subTotal;
                 }
-
-                // 2. वार्षिक परीक्षा (थ्योरी + प्रोजेक्ट) विभाजन ट्रैकिंग
-                // आपकी शीट में थ्योरी विषय के नाम से और प्रोजेक्ट 'PRO' के नाम से अगले कॉलम में है
-                // हम डायनामिक इंडेक्सिंग या की-मैचिंग से निकाल रहे हैं
             });
 
-            // आपकी एक्सेल शीट का 'TOTAL' कॉलम सीधे रेंडर करना
-            const excelTotalHY = matchedStudent['TOTAL'] || matchedStudent['HALF YEARLY TOTAL'] || hyTotalSum;
-            const excelTotalAN = matchedStudent['TOTAL'] || matchedStudent['ANNUAL TOTAL'] || matchedStudent['GRAND TOTAL'] || 0;
+            // Total update blocks
+            document.getElementById('hy-table-body').innerHTML = hyTableContent || `<tr><td colspan="2" class="p-4 text-center text-gray-400">डेटा उपलब्ध नहीं है</td></tr>`;
+            document.getElementById('hy-total').innerText = getFieldVal(['TOTAL', 'GRANDTOTAL']) !== "N/A" ? getFieldVal(['TOTAL', 'GRANDTOTAL']) : hyTotalSum;
 
-            // डमी या कैलकुलेटेड डेटा भरना यदि कॉलम्स बिल्कुल सटीक मिलें
-            document.getElementById('hy-table-body').innerHTML = hyTableContent || `<tr><td colspan="3" class="p-4 text-center text-gray-400">छमाही परीक्षा का डेटा उपलब्ध नहीं है</td></tr>`;
-            document.getElementById('hy-total').innerText = excelTotalHY;
+            document.getElementById('annual-table-body').innerHTML = anTableContent || `<tr><td colspan="4" class="p-4 text-center text-gray-400">डेटा उपलब्ध नहीं है</td></tr>`;
+            document.getElementById('annual-total').innerText = anTotalSum;
 
-            // वार्षिक टेबल का रेंडर ढांचा
-            // मान लेते हैं कि वार्षिक के मुख्य कॉलम्स भी इसी प्रकार डिस्ट्रीब्यूटेड हैं
-            let sampleAnSubjects = ['HINDI', 'ENGLISH', 'SANSKRIT', 'MATH', 'SCIENCE', 'SO SCIENCE'];
-            sampleAnSubjects.forEach(sub => {
-                // आपकी वार्षिक शीट में डेटा ढूंढना
-                anTableContent += `<tr class="hover:bg-gray-50 transition">
-                    <td class="p-3 font-semibold text-gray-700">${sub}</td>
-                    <td class="p-3 text-center text-gray-600">${matchedStudent[sub + '_TH'] || matchedStudent[sub] || '0'}</td>
-                    <td class="p-3 text-center text-emerald-600">${matchedStudent[sub + '_PRO'] || matchedStudent['PRO'] || '0'}</td>
-                    <td class="p-3 text-center font-bold bg-emerald-50 text-emerald-700">${matchedStudent[sub + '_TOTAL'] || matchedStudent[sub] || '0'}</td>
-                </tr>`;
-            });
-            document.getElementById('annual-table-body').innerHTML = anTableContent;
-            document.getElementById('annual-total').innerText = excelTotalAN || "स्कैन जारी";
-
-            // कार्ड को स्क्रीन पर दिखाना
+            // Display card block
             document.getElementById('result-card-container').classList.remove('hidden');
             document.getElementById('result-card-container').scrollIntoView({ behavior: 'smooth' });
         }
