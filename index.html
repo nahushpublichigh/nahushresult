@@ -36,19 +36,17 @@
     </nav>
 
     <div class="max-w-7xl mx-auto px-4 py-6 md:py-8">
-        
         <div id="student-portal" class="tab-content active space-y-6 md:space-y-8">
-            
             <div class="max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 mt-4 no-print">
                 <div class="bg-indigo-700 text-white px-6 py-6 md:py-8 text-center space-y-2">
                     <h2 id="portal-school-title" class="text-xl md:text-2xl font-bold tracking-wide">नहुष पब्लिक हाई स्कूल</h2>
-                    <p id="portal-exam-title" class="text-indigo-100 text-xs md:text-sm font-medium">वार्षिक परीक्षा (Result Portal)</p>
+                    <p id="portal-exam-title" class="text-indigo-100 text-xs md:text-sm font-medium">वार्षिक परीक्षा परिणाम (सत्र 2025-26)</p>
                 </div>
                 
                 <div class="p-5 md:p-6 space-y-4 bg-slate-50">
                     <div>
                         <label for="student-roll" class="block text-sm font-semibold text-gray-700 mb-2 text-center">अपना रोल नंबर दर्ज करें (Enter Roll Number)</label>
-                        <input type="text" id="student-roll" placeholder="उदाहरण: 305, 101 आदि" class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-lg md:text-xl focus:border-indigo-500 focus:outline-none transition font-bold text-center tracking-wider bg-white">
+                        <input type="text" id="student-roll" placeholder="उदाहरण: 405, 301, 101 आदि" class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-lg md:text-xl focus:border-indigo-500 focus:outline-none transition font-bold text-center tracking-wider bg-white">
                     </div>
 
                     <button onclick="searchStudentResult()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 md:py-3.5 px-4 rounded-xl shadow-md transition transform active:scale-95 flex items-center justify-center space-x-2 text-base md:text-lg">
@@ -60,7 +58,6 @@
             </div>
 
             <div id="report-card-container" class="max-w-4xl mx-auto bg-white p-4 md:p-8 rounded-2xl shadow-2xl border-2 border-indigo-100 hidden relative">
-                
                 <button onclick="window.print()" class="absolute top-4 right-4 no-print bg-slate-100 hover:bg-slate-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1 transition">
                     <span>🖨️ प्रिंट मार्कशीट</span>
                 </button>
@@ -89,8 +86,8 @@
                         <thead>
                             <tr class="bg-indigo-700 text-white font-bold">
                                 <th class="p-2 md:p-3 text-left">विषय (Subject)</th>
-                                <th class="p-2 md:p-3">अर्धवार्षिक परीक्षा (Half Yearly)</th>
-                                <th class="p-2 md:p-3">वार्षिक परीक्षा (Annual Exam)</th>
+                                <th class="p-2 md:p-3">छमाही परीक्षा (Half Yearly)</th>
+                                <th class="p-2 md:p-3">वार्षिक परीक्षा (Annual Theory)</th>
                                 <th class="p-2 md:p-3">प्रोजेक्ट अंक (Project)</th>
                                 <th class="p-2 md:p-3 bg-indigo-800">कुल अंक (Total)</th>
                             </tr>
@@ -124,25 +121,20 @@
     <script>
         let globalWorkbook = null;
 
-        // Auto-Load Function: Website khulte hi Excel file GitHub se utha legi
         window.onload = function() {
-            // Excel file ka wahi naam jo aapne rakha hai
             const excelUrl = 'RESULT 2025-26.xlsx'; 
             
             fetch(excelUrl)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Excel file load nahi ho saki. Kripya check karein ki kya file GitHub par uploaded hai.');
+                        throw new Error('संचिका लोड नहीं हो सकी।');
                     }
                     return response.arrayBuffer();
                 })
                 .then(data => {
                     const workbook = XLSX.read(new Uint8Array(data), { type: 'array' });
                     globalWorkbook = workbook;
-                    
-                    // Loading screen ko band karna
                     document.getElementById('loading-overlay').classList.add('hidden');
-                    console.log("Excel data loaded successfully!");
                 })
                 .catch(error => {
                     console.error("Error:", error);
@@ -175,17 +167,19 @@
             let studentData = null;
             let foundSheetName = "";
 
-            // Saari sheets mein student ko search karna uske Roll No se
+            // Goshwara aur formats ko chhodkar baki sheets me dhoondhein
             for (let i = 0; i < globalWorkbook.SheetNames.length; i++) {
                 const sheetName = globalWorkbook.SheetNames[i];
-                // Agar sheet ka naam Goshwara ya Marksheet template hai to use chhod dena
-                if (sheetName.includes("GOSHWARA") || sheetName.includes("MARKSHEET") || sheetName.includes("TABLE")) continue;
+                const upperSheet = sheetName.toUpperCase();
+                if (upperSheet.includes("GOSHWARA") || upperSheet.includes("MARKSHEET") || upperSheet.includes("TABLE") || upperSheet.includes("RANK") || upperSheet.includes("ADMIT")) continue;
 
                 const sheet = globalWorkbook.Sheets[sheetName];
-                const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+                
+                // Header row dhoondhne ke liye 2 lines skip karke check karte hain kyuki starting me school ka naam hai
+                const rows = XLSX.utils.sheet_to_json(sheet, { defval: "", range: 2 });
 
                 const found = rows.find(r => {
-                    const rNo = String(r['ROLL NO.'] || r['ROLL NO'] || r['Roll No'] || '').trim();
+                    const rNo = String(r['ROLL NO.'] || r['ROLL NO'] || r['Roll No'] || r['__EMPTY'] || '').trim();
                     return rNo === rollInput;
                 });
 
@@ -193,6 +187,33 @@
                     studentData = found;
                     foundSheetName = sheetName;
                     break;
+                }
+            }
+
+            // Agar range 2 se nahi mila to normal read karke ek baar aur koshish karein
+            if (!studentData) {
+                for (let i = 0; i < globalWorkbook.SheetNames.length; i++) {
+                    const sheetName = globalWorkbook.SheetNames[i];
+                    const upperSheet = sheetName.toUpperCase();
+                    if (upperSheet.includes("GOSHWARA") || upperSheet.includes("MARKSHEET") || upperSheet.includes("TABLE") || upperSheet.includes("RANK") || upperSheet.includes("ADMIT")) continue;
+
+                    const sheet = globalWorkbook.Sheets[sheetName];
+                    const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+                    const found = rows.find(r => {
+                        // Alag-alag tarike ke header names check karein
+                        for (let key in r) {
+                            if (key.toUpperCase().includes('ROLL NO') || key.toUpperCase().includes('ROLLNO')) {
+                                if (String(r[key]).trim() === rollInput) {
+                                    studentData = r;
+                                    foundSheetName = sheetName;
+                                    break;
+                                }
+                            }
+                        }
+                        if (studentData) return true;
+                    });
+                    if (studentData) break;
                 }
             }
 
@@ -208,85 +229,123 @@
         function displayResultCard(student, sheetName) {
             const cardContainer = document.getElementById('report-card-container');
             
-            // Student Information Map karna
-            document.getElementById('rc-roll').innerText = student['ROLL NO.'] || student['ROLL NO'] || student['Roll No'] || 'N/A';
-            document.getElementById('rc-name').innerText = student['NAME OF STUDENT'] || student['STUDENT NAME'] || student['NAME'] || 'N/A';
-            document.getElementById('rc-father').innerText = student['NAME OF FATHER'] || student["FATHER'S NAME"] || student['FATHER NAME'] || 'N/A';
-            document.getElementById('rc-mother').innerText = student['NAME OF MOTHER'] || student["MOTHER'S NAME"] || student['MOTHER NAME'] || 'N/A';
-            document.getElementById('rc-dob').innerText = student['BIRTH DATE'] || student['DOB'] || student['DATE OF BIRTH'] || 'N/A';
-            document.getElementById('rc-class').innerText = student['CLASS'] || sheetName || 'N/A';
+            // Student ke personal data ko nikalna
+            let rollNo = "";
+            let sName = "";
+            let fName = "";
+            let mName = "";
+            let dob = "";
+            let sClass = student['CLASS'] || sheetName.replace("CLASS-", "").replace(" 2025-26", "") || 'N/A';
 
-            // Marks Table rendering logic
+            for (let key in student) {
+                const kUpper = key.toUpperCase().trim();
+                if (kUpper.includes('ROLL NO')) rollNo = student[key];
+                else if (kUpper.includes('STUDENT NAME') || kUpper === 'NAME OF STUDENT' || kUpper === 'NAME') sName = student[key];
+                else if (kUpper.includes('FATHER') || kUpper === 'NAME OF FATHER') fName = student[key];
+                else if (kUpper.includes('MOTHER') || kUpper === 'NAME OF MOTHER') mName = student[key];
+                else if (kUpper.includes('BIRTH DATE') || kUpper.includes('DOB') || kUpper.includes('DATE OF BIRTH')) dob = student[key];
+            }
+
+            document.getElementById('rc-roll').innerText = rollNo || 'N/A';
+            document.getElementById('rc-name').innerText = sName || 'N/A';
+            document.getElementById('rc-father').innerText = fName || 'N/A';
+            document.getElementById('rc-mother').innerText = mName || 'N/A';
+            document.getElementById('rc-dob').innerText = dob || 'N/A';
+            document.getElementById('rc-class').innerText = sClass;
+
             const tableBody = document.getElementById('marks-table-body');
             tableBody.innerHTML = "";
 
-            // Common subjects array jise excel mein hum dhundhenge
-            const subjects = ["HINDI", "ENGLISH", "SANSKRIT", "MATH", "SCIENCE", "SO SCIENCE", "EVS", "COM", "COMPUTER", "G.K.", "GK"];
+            // Aapki sheet ke columns ke aadhar par vishay ki suchi
+            const subjectsMapping = [
+                { display: "HINDI", keys: ["HINDI", "HINDI "] },
+                { display: "ENGLISH", keys: ["ENGLISH", "ENG", "ENGLISH "] },
+                { display: "SANSKRIT", keys: ["SANSKRIT", "SAN", "SANSKRIT "] },
+                { display: "MATHEMATICS", keys: ["MATH", "MATHS", "MATHEMATICS"] },
+                { display: "SCIENCE", keys: ["SCIENCE", "SCI"] },
+                { display: "SOCIAL SCIENCE", keys: ["SO SCIENCE", "SO SCI", "SOCIAL SCIENCE", "SO . SCIENCE"] },
+                { display: "EVS", keys: ["EVS", "EVS "] },
+                { display: "COMPUTER", keys: ["COMPUTER", "COM", "COMP"] }
+            ];
+
             let grandTotal = 0;
-            let totalSubjectsCount = 0;
+            let keysInStudent = Object.keys(student);
 
-            subjects.forEach(sub => {
-                // Check karna ki row mein subject ka data hai ya nahi
-                let hasData = false;
-                let hyMarks = "-";
-                let annualMarks = "-";
-                let proMarks = "-";
-                let totalMarks = 0;
+            subjectsMapping.forEach(sub => {
+                // Pehle check karein ki is vishay ka data hai ya nahi
+                let mainKey = keysInStudent.find(k => sub.keys.includes(k.toUpperCase().trim()));
+                
+                if (mainKey) {
+                    let hyMarks = "-";
+                    let annualTheory = "-";
+                    let projectMarks = "-";
+                    let subjectTotal = 0;
 
-                // Alag-alag classes ke excel format ke hisab se numbers uthana
-                if (student[sub] !== undefined || student[sub + ' '] !== undefined) {
-                    annualMarks = student[sub] || student[sub + ' '] || 0;
-                    proMarks = student['PRO'] || student[sub + '_PRO'] || 0;
-                    totalMarks = parseFloat(annualMarks) + parseFloat(proMarks);
-                    hasData = true;
-                } else if (student['HALF YEARLY EXAM'] || student['ANNUAL EXAMINATION']) {
-                    // Agar koi specific complex layout ho tab ke liye handles
-                }
+                    // Aapki file me Chhamahi ke columns pehle hain aur Varshik ke bad me, isliye unhe index se dhoondhenge
+                    let keyIndex = keysInStudent.indexOf(mainKey);
+                    
+                    // Varshik ke columns ke liye 'PRO' ya uske pas wale columns check karein
+                    annualTheory = student[mainKey] || "-";
+                    
+                    // Agla column PROJECT ho sakta hai (PRO)
+                    let nextKey = keysInStudent[keyIndex + 1];
+                    if (nextKey && nextKey.toUpperCase().trim().includes("PRO")) {
+                        projectMarks = student[nextKey] || "-";
+                    }
 
-                // Agar normal columns milte hain (jaise direct numbers hain)
-                if (student[sub] !== undefined && String(student[sub]).trim() !== "") {
-                    annualMarks = student[sub];
-                    totalMarks = parseFloat(annualMarks) || 0;
-                    hasData = true;
-                }
+                    // Total Calculation
+                    let tMarks = parseFloat(annualTheory) || 0;
+                    let pMarks = parseFloat(projectMarks) || 0;
+                    subjectTotal = tMarks + pMarks;
 
-                if (hasData) {
-                    grandTotal += totalMarks;
-                    totalSubjectsCount++;
+                    // Agar Excel me aage TOTAL column bana hai to wahan se bhi le sakte hain
+                    let possibleTotalKey = keysInStudent[keyIndex + 2];
+                    if (possibleTotalKey && possibleTotalKey.toUpperCase().trim().includes("TOTAL")) {
+                        subjectTotal = parseFloat(student[possibleTotalKey]) || subjectTotal;
+                    }
 
-                    const row = `
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="p-2 md:p-3 text-left font-bold text-gray-700">${sub}</td>
-                            <td class="p-2 md:p-3 text-gray-600">${hyMarks}</td>
-                            <td class="p-2 md:p-3 text-gray-600">${annualMarks}</td>
-                            <td class="p-2 md:p-3 text-gray-600">${proMarks !== 0 ? proMarks : '-'}</td>
-                            <td class="p-2 md:p-3 font-bold text-indigo-900">${totalMarks}</td>
-                        </tr>
-                    `;
-                    tableBody.innerHTML += row;
+                    if (annualTheory !== "-" || projectMarks !== "-") {
+                        const row = `
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-2 md:p-3 text-left font-bold text-gray-700">${sub.display}</td>
+                                <td class="p-2 md:p-3 text-gray-600">${hyMarks}</td>
+                                <td class="p-2 md:p-3 text-gray-600">${annualTheory}</td>
+                                <td class="p-2 md:p-3 text-gray-600">${projectMarks !== "-" && projectMarks !== 0 ? projectMarks : '-'}</td>
+                                <td class="p-2 md:p-3 font-bold text-indigo-900">${subjectTotal}</td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    }
                 }
             });
 
-            // Agar automatic subject detect nahi hue to Excel ka TOTAL column direct pick karein
-            let finalExcelTotal = student['TOTAL'] || student['TOTAL '] || student['GRAND TOTAL'] || grandTotal;
-            document.getElementById('rc-grand-total').innerText = finalExcelTotal;
+            // Gland total/Percentage nikalna
+            let excelTotalKey = keysInStudent.find(k => k.toUpperCase().trim() === "TOTAL" || k.toUpperCase().trim() === "GRAND TOTAL");
+            let finalTotal = excelTotalKey ? student[excelTotalKey] : student['TOTAL'] || '-';
+            document.getElementById('rc-grand-total').innerText = finalTotal;
 
-            // Percentage nikalna
-            let calculatedPer = student['PERCENTAGE'] || student['PERCENTAGE '] || ((parseFloat(finalExcelTotal) / (totalSubjectsCount * 100)) * 100).toFixed(2);
-            if(isNaN(calculatedPer)) calculatedPer = parseFloat(calculatedPer).toFixed(2) || "0.00";
-            document.getElementById('rc-percentage').innerText = calculatedPer + "%";
+            let excelPerKey = keysInStudent.find(k => k.toUpperCase().trim().includes("PERCENT"));
+            let finalPercentage = excelPerKey ? student[excelPerKey] : '0.00';
+            
+            if(finalPercentage === '0.00' && parseFloat(finalTotal) > 0) {
+                finalPercentage = ((parseFloat(finalTotal) / 600) * 100).toFixed(2);
+            }
+            
+            document.getElementById('rc-percentage').innerText = String(finalPercentage).includes("%") ? finalPercentage : finalPercentage + "%";
 
-            // Status Pass/Fail
-            let status = "PASS";
-            if (student['RESULT'] || student['STATUS']) {
-                status = student['RESULT'] || student['STATUS'];
-            } else if (parseFloat(calculatedPer) < 33) {
+            // Pass/Fail status
+            let excelStatusKey = keysInStudent.find(k => k.toUpperCase().trim() === "RESULT" || k.toUpperCase().trim() === "STATUS");
+            let status = excelStatusKey ? String(student[excelStatusKey]).toUpperCase().trim() : "PASS";
+
+            if (parseFloat(finalPercentage) < 33 || status.includes('FAIL') || status.includes('अनुत्तीर्ण')) {
                 status = "FAIL";
+            } else {
+                status = "PASS";
             }
 
             const outcomeDiv = document.getElementById('rc-outcome');
-            outcomeDiv.innerText = status;
-            if (status.includes('FAIL') || status.includes('FAIL')) {
+            outcomeDiv.innerText = status === "PASS" ? "उत्तीर्ण (PASS)" : "अनुत्तीर्ण (FAIL)";
+            if (status === "FAIL") {
                 outcomeDiv.className = "text-xl md:text-2xl font-extrabold uppercase mt-1 text-red-600";
             } else {
                 outcomeDiv.className = "text-xl md:text-2xl font-extrabold uppercase mt-1 text-green-600";
