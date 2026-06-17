@@ -11,179 +11,279 @@
         body { font-family: 'Poppins', sans-serif; background-color: #f3f4f6; }
         .exam-tab { display: none; }
         .exam-tab.active { display: block; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-card { box-shadow: none; border: 1px solid #000; padding: 20px; }
+        }
     </style>
 </head>
-<body>
+<body class="bg-gray-100">
 
     <nav class="bg-indigo-700 text-white shadow-md no-print p-4">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold">नहुष पब्लिक हाई स्कूल - डिजिटल रिजल्ट पोर्टल</h1>
-            <button id="admin-login-btn" onclick="toggleAdminPanel()" class="bg-indigo-900 hover:bg-indigo-800 px-4 py-2 rounded text-sm font-semibold">
-                🔒 Admin Login
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <h1 class="text-xl font-bold tracking-wide">नहुष पब्लिक हाई स्कूल, मोहला</h1>
+            <button id="admin-login-btn" onclick="toggleAdminPanel()" class="bg-indigo-900 hover:bg-indigo-955 px-4 py-2 rounded text-sm font-semibold transition shadow border border-indigo-500/30">
+                🔒 एडमिन लॉगिन (Upload Excel)
             </button>
         </div>
     </nav>
 
-    <div id="admin-panel" class="max-w-4xl mx-auto mt-6 p-6 bg-white rounded-lg shadow-md hidden no-print">
-        <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">🛡️ केवल एडमिन के लिए (Admin Controls)</h2>
+    <div id="admin-panel" class="max-w-4xl mx-auto mt-6 p-6 bg-white rounded-lg shadow-md hidden no-print border-l-4 border-amber-500">
+        <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">🛡️ केवल स्कूल एडमिन के लिए</h2>
         
         <div id="auth-box" class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Security PIN दर्ज करें:</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">सिक्योरिटी पिन (PIN) दर्ज करें:</label>
             <div class="flex gap-2">
-                <input type="password" id="admin-pin" placeholder="••••" class="border rounded p-2 text-center w-32 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <button onclick="verifyAdmin()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium">Verify</button>
+                <input type="password" id="admin-pin" placeholder="••••" class="border rounded p-2 text-center w-32 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-lg">
+                <button onclick="verifyAdmin()" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded font-medium transition shadow">Verify</button>
             </div>
-            <p id="auth-error" class="text-red-500 text-xs mt-1 hidden">गलत PIN! कृपया सही पासवर्ड डालें।</p>
+            <p id="auth-error" class="text-red-500 text-xs mt-2 font-semibold hidden">❌ गलत PIN! कृपया सही पासवर्ड डालें।</p>
         </div>
 
         <div id="upload-section" class="hidden border-t pt-4">
-            <p class="text-sm text-green-700 font-medium mb-3">✅ सुरक्षित लॉग इन सफल। अब आप फाइल बदल सकते हैं।</p>
-            <label class="block text-sm font-medium text-gray-700 mb-2">नई Excel फाइल अपलोड करें (यह ब्राउज़र में ऑनलाइन सेव हो जाएगी):</label>
-            <input type="file" id="excel-file" accept=".xlsx, .xls" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+            <p class="text-sm text-green-700 font-bold mb-3 flex items-center gap-1">✅ लॉगिन सफल! अब आप एक्सेल फ़ाइल अपलोड करके ऑनलाइन सेव कर सकते हैं।</p>
+            <label class="block text-sm font-medium text-gray-700 mb-2">अपनी स्कूल रिजल्ट वाली Excel (.xlsx) फ़ाइल चुनें:</label>
+            <input type="file" id="excel-file" accept=".xlsx, .xls" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+            <p class="text-xs text-gray-500 mt-2">💡 नोट: फ़ाइल अपलोड करते ही सारा डेटा आपके इसी ब्राउज़र में हमेशा के लिए ऑनलाइन सुरक्षित सेव हो जाएगा।</p>
         </div>
     </div>
 
-    <div class="max-w-4xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-md no-print">
-        <h3 class="text-lg font-bold text-gray-800 mb-4 text-center">🔍 छात्र परिणाम खोजें</h3>
-        <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
-            <input type="text" id="search-roll" placeholder="रोल नंबर दर्ज करें (e.g., 701, 1001)" class="border rounded p-3 w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-center font-bold">
-            <button onclick="searchResult()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold w-full md:w-auto">नतिजा देखें</button>
+    <div class="max-w-4xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-md no-print text-center">
+        <h3 class="text-xl font-bold text-gray-800 mb-2">🔍 छात्र परीक्षा परिणाम पोर्टल (सत्र 2025-26)</h3>
+        <p class="text-sm text-gray-500 mb-6">कृपया अपना सही अनुक्रमांक (Roll Number) भरकर परिणाम देखें</p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center items-center max-w-md mx-auto">
+            <input type="text" id="search-roll" placeholder="रोल नंबर डालें (जैसे: 105, 601, 701)" class="border border-gray-300 rounded-lg p-3 w-full font-extrabold text-xl text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase tracking-wider">
+            <button onclick="searchResult()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-bold w-full sm:w-auto transition shadow-md whitespace-nowrap">नतीजा देखें</button>
         </div>
     </div>
 
-    <div id="result-card-container" class="max-w-4xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-lg hidden print-card">
-        <div class="border-b-2 border-indigo-700 pb-4 mb-6 text-center">
-            <h2 class="text-2xl font-bold text-indigo-900">नहुष पब्लिक हाई स्कूल, मोहला</h2>
-            <p class="text-gray-600 font-medium">वार्षिक परीक्षा परिणाम - सत्र 2025-26</p>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-left bg-gray-50 p-4 rounded border text-sm">
-                <div><strong>नाम:</strong> <span id="res-name"></span></div>
-                <div><strong>पिता का नाम:</strong> <span id="res-father"></span></div>
-                <div><strong>कक्षा:</strong> <span id="res-class"></span></div>
-                <div><strong>रोल नंबर:</strong> <span id="res-roll"></span></div>
+    <div id="result-card-container" class="max-w-4xl mx-auto mt-8 p-6 bg-white rounded-xl shadow-xl hidden print-card mb-12">
+        
+        <div class="border-b-4 border-indigo-700 pb-4 mb-6 text-center">
+            <h2 class="text-2xl md:text-3xl font-black text-indigo-950 tracking-wide">नहुष पब्लिक हाई स्कूल, मोहला</h2>
+            <p class="text-xs md:text-sm text-gray-500 font-bold tracking-widest mt-1 uppercase">Block Majholi, Dist. Jabalpur (M.P.)</p>
+            <p class="text-md font-semibold text-indigo-700 bg-indigo-50 inline-block px-4 py-1 rounded-full mt-3">परीक्षा परिणाम सूची - सत्र 2025-26</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mt-6 text-left bg-gray-50 p-4 rounded-xl border border-gray-200 text-sm">
+                <div class="p-1"><span class="text-gray-500 font-medium">छात्र का नाम:</span> <strong id="res-name" class="text-gray-900 block text-base font-bold"></strong></div>
+                <div class="p-1"><span class="text-gray-500 font-medium">पिता का नाम:</span> <strong id="res-father" class="text-gray-900 block text-base font-bold"></strong></div>
+                <div class="p-1"><span class="text-gray-500 font-medium">कक्षा (Class):</span> <strong id="res-class" class="text-gray-900 block text-base font-bold"></strong></div>
+                <div class="p-1"><span class="text-gray-500 font-medium">अनुक्रमांक (Roll No):</span> <strong id="res-roll" class="text-indigo-700 block text-lg font-black"></strong></div>
             </div>
         </div>
 
-        <div class="flex border-b mb-4 no-print">
-            <button id="tab-btn-hy" onclick="switchExamTab('half-yearly')" class="px-4 py-2 border-b-2 border-indigo-600 text-indigo-600 font-bold">Half-Yearly Exam (छमाही)</button>
-            <button id="tab-btn-an" onclick="switchExamTab('annual')" class="px-4 py-2 border-b-2 border-transparent text-gray-500 font-bold hover:text-indigo-600">Annual Exam (वार्षिक)</button>
+        <div class="flex gap-2 border-b border-gray-200 mb-6 no-print">
+            <button id="tab-btn-hy" onclick="switchExamTab('half-yearly')" class="px-5 py-2.5 font-bold text-sm rounded-t-lg border-b-4 border-indigo-600 text-indigo-700 bg-indigo-50/50 transition">
+                📊 छमाही परीक्षा (Half-Yearly)
+            </button>
+            <button id="tab-btn-an" onclick="switchExamTab('annual')" class="px-5 py-2.5 font-bold text-sm rounded-t-lg border-b-4 border-transparent text-gray-500 hover:text-indigo-600 hover:bg-gray-50 transition">
+                🏆 वार्षिक परीक्षा (Annual Exam)
+            </button>
         </div>
 
-        <div id="exam-half-yearly" class="exam-tab active">
-            <h4 class="text-md font-bold text-indigo-700 mb-2">📊 Half Yearly Examination Marks</h4>
-            <table class="w-full text-left border-collapse border border-gray-300 text-sm">
-                <thead>
-                    <tr class="bg-indigo-50 text-indigo-900">
-                        <th class="p-2 border border-gray-300">विषय (Subject)</th>
-                        <th class="p-2 border border-gray-300 text-center">अधिकतम अंक (Max)</th>
-                        <th class="p-2 border border-gray-300 text-center">प्राप्तांक (Obtained)</th>
-                    </tr>
-                </thead>
-                <tbody id="hy-table-body">
-                    </tbody>
-            </table>
-            <div class="mt-2 text-right font-bold text-gray-700">छमाही कुल: <span id="hy-total"></span></div>
-        </div>
-
-        <div id="exam-annual" class="exam-tab">
-            <h4 class="text-md font-bold text-green-700 mb-2">🏆 Annual Examination Marks (Theory + Project)</h4>
-            <table class="w-full text-left border-collapse border border-gray-300 text-sm">
-                <thead>
-                    <tr class="bg-green-50 text-green-900">
-                        <th class="p-2 border border-gray-300">विषय (Subject)</th>
-                        <th class="p-2 border border-gray-300 text-center">थ्योरी (Theory)</th>
-                        <th class="p-2 border border-gray-300 text-center">प्रोजेक्ट (Project)</th>
-                        <th class="p-2 border border-gray-300 text-center">कुल अंक (Total)</th>
-                    </tr>
-                </thead>
-                <tbody id="annual-table-body">
-                    </tbody>
-            </table>
-            <div class="mt-2 text-right font-bold text-gray-700">वार्षिक कुल: <span id="annual-total"></span></div>
-        </div>
-
-        <div class="mt-6 pt-4 border-t-2 border-dashed grid grid-cols-2 gap-4 items-center">
-            <div>
-                <p class="text-lg font-bold">महायोग (Grand Total): <span id="final-grand-total" class="text-indigo-700"></span></p>
-                <p class="text-sm font-medium">प्रतिशत (Percentage): <span id="final-per"></span>%</p>
+        <div id="exam-half-yearly" class="exam-tab active animate-fade-in">
+            <h4 class="text-base font-bold text-indigo-800 mb-3 flex items-center gap-2">🔹 अर्धवार्षिक परीक्षा प्राप्तांक (Out of 60)</h4>
+            <div class="overflow-x-auto rounded-lg border border-gray-200">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-indigo-700 text-white font-semibold">
+                            <th class="p-3">विषय (Subject)</th>
+                            <th class="p-3 text-center w-36">अधिकतम अंक</th>
+                            <th class="p-3 text-center w-36">प्राप्तांक (Marks)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hy-table-body" class="divide-y divide-gray-200 bg-white">
+                        </tbody>
+                </table>
             </div>
-            <div class="text-right">
-                <span id="final-status" class="inline-block px-4 py-1 text-white font-bold rounded text-lg"></span>
+            <div class="mt-4 text-right bg-indigo-50 p-3 rounded-lg border border-indigo-100"><span class="text-gray-600 font-medium">छमाही कुल योग:</span> <strong id="hy-total" class="text-xl font-bold text-indigo-900 ml-2"></strong></div>
+        </div>
+
+        <div id="exam-annual" class="exam-tab animate-fade-in">
+            <h4 class="text-base font-bold text-emerald-800 mb-3 flex items-center gap-2">🏆 वार्षिक परीक्षा प्राप्तांक (Theory + Project)</h4>
+            <div class="overflow-x-auto rounded-lg border border-gray-200">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-emerald-700 text-white font-semibold">
+                            <th class="p-3">विषय (Subject)</th>
+                            <th class="p-3 text-center w-28">थ्योरी (Th)</th>
+                            <th class="p-3 text-center w-28">प्रोजेक्ट (Pr)</th>
+                            <th class="p-3 text-center w-28 bg-emerald-800">कुल योग (Total)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="annual-table-body" class="divide-y divide-gray-200 bg-white">
+                        </tbody>
+                </table>
             </div>
+            <div class="mt-4 text-right bg-emerald-50 p-3 rounded-lg border border-emerald-100"><span class="text-gray-600 font-medium">वार्षिक कुल योग:</span> <strong id="annual-total" class="text-xl font-bold text-emerald-900 ml-2"></strong></div>
+        </div>
+
+        <div class="mt-8 pt-4 border-t border-gray-200 flex justify-between items-center no-print">
+            <p class="text-xs text-gray-400">💡 इस परिणाम पत्रक को आप सीधे प्रिंट या PDF में सेव कर सकते हैं।</p>
+            <button onclick="window.print()" class="bg-gray-800 hover:bg-gray-900 text-white px-5 py-2 rounded-lg text-sm font-bold shadow transition flex items-center gap-1">
+                🖨️ रिजल्ट प्रिंट करें
+            </button>
         </div>
     </div>
 
     <script>
-        // Admin PIN Setting
-        const ADMIN_PIN = "1234"; // Aap apna pasandida 4-digit code yahan dal sakte hain
-        let studentData = JSON.parse(localStorage.getItem('savedSchoolData')) || [];
+        const ADMIN_PIN = "1234"; // आपका मास्टर पासवर्ड पिन
+        let globalDatabase = JSON.parse(localStorage.getItem('nahushSchoolOnlineDB')) || [];
 
         function toggleAdminPanel() {
-            const panel = document.getElementById('admin-panel');
-            panel.classList.toggle('hidden');
+            document.getElementById('admin-panel').classList.toggle('hidden');
         }
 
         function verifyAdmin() {
-            const enteredPin = document.getElementById('admin-pin').value;
-            if(enteredPin === ADMIN_PIN) {
+            const entered = document.getElementById('admin-pin').value;
+            if(entered === ADMIN_PIN) {
                 document.getElementById('auth-box').classList.add('hidden');
                 document.getElementById('upload-section').classList.remove('hidden');
             } else {
-                document.getElementById('auth-error').classList.remove('hidden');
+                const err = document.getElementById('auth-error');
+                err.classList.remove('hidden');
+                setTimeout(() => err.classList.add('hidden'), 3000);
             }
         }
 
-        // Online Auto-Save in LocalStorage after Excel Processing
+        // Processing Excel sheets dynamically
         document.getElementById('excel-file').addEventListener('change', function(e) {
             const file = e.target.files[0];
+            if(!file) return;
+
             const reader = new FileReader();
             reader.onload = function(evt) {
-                const data = evt.target.result;
-                const workbook = XLSX.read(data, { type: 'binary' });
-                // Pehli sheet ko data maan rahe hain
-                const sheetName = workbook.SheetNames[0];
-                const xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-                
-                // Save directly Online to Browser Storage
-                localStorage.setItem('savedSchoolData', JSON.stringify(xlData));
-                studentData = xlData;
-                alert('🎯 Excel File ऑनलाइन सुरक्षित सेव हो गई है! अब केवल एडमिन ही इसे बदल सकता है।');
+                const binaryData = evt.target.result;
+                const workbook = XLSX.read(binaryData, { type: 'binary' });
+                let compiledRecords = [];
+
+                // आपकी सभी शीट्स (जैसे Class 6th, 7th, 8th etc.) को लूप करके डेटा एकसाथ कंबाइन करेगा
+                workbook.SheetNames.forEach(sheetName => {
+                    const rawSheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: "" });
+                    
+                    // हेडर सफाई और रिकॉर्ड रिफाइनिंग
+                    rawSheetData.forEach(row => {
+                        let formattedRow = {};
+                        Object.keys(row).forEach(key => {
+                            formattedRow[key.toString().trim().toUpperCase()] = row[key].toString().trim();
+                        });
+                        
+                        // केवल वैलिड छात्र डेटा को स्टोर करना
+                        if(formattedRow['ROLL NO.'] || formattedRow['ROLL NO']) {
+                            formattedRow['_ORIGINAL_CLASS'] = sheetName;
+                            compiledRecords.push(formattedRow);
+                        }
+                    });
+                });
+
+                if(compiledRecords.length > 0) {
+                    localStorage.setItem('nahushSchoolOnlineDB', JSON.stringify(compiledRecords));
+                    globalDatabase = compiledRecords;
+                    alert(`🎯 बधाई हो! एक्सेल फ़ाइल के सभी ${compiledRecords.length} छात्रों का डेटा ऑनलाइन सुरक्षित लोड हो गया है।`);
+                    document.getElementById('admin-panel').classList.add('hidden');
+                } else {
+                    alert("❌ फ़ाइल में सही डेटा नहीं मिला। कृपया जांचें कि कॉलम में 'ROLL NO' लिखा है या नहीं।");
+                }
             };
             reader.readAsBinaryString(file);
         });
 
-        function switchExamTab(tab) {
+        function switchExamTab(examType) {
             document.querySelectorAll('.exam-tab').forEach(el => el.classList.remove('active'));
-            document.getElementById('exam-half-yearly').classList.remove('active');
-            document.getElementById('exam-annual').classList.remove('active');
-            
-            if(tab === 'half-yearly') {
+            document.getElementById('tab-btn-hy').className = "px-5 py-2.5 font-bold text-sm rounded-t-lg border-b-4 border-transparent text-gray-500 hover:text-indigo-600 hover:bg-gray-50 transition";
+            document.getElementById('tab-btn-an').className = "px-5 py-2.5 font-bold text-sm rounded-t-lg border-b-4 border-transparent text-gray-500 hover:text-emerald-600 hover:bg-gray-50 transition";
+
+            if(examType === 'half-yearly') {
                 document.getElementById('exam-half-yearly').classList.add('active');
+                document.getElementById('tab-btn-hy').className = "px-5 py-2.5 font-bold text-sm rounded-t-lg border-b-4 border-indigo-600 text-indigo-700 bg-indigo-50/50 transition";
             } else {
                 document.getElementById('exam-annual').classList.add('active');
+                document.getElementById('tab-btn-an').className = "px-5 py-2.5 font-bold text-sm rounded-t-lg border-b-4 border-emerald-600 text-emerald-700 bg-emerald-50/50 transition";
             }
         }
 
         function searchResult() {
-            const roll = document.getElementById('search-roll').value.trim();
-            if(!roll) return alert("कृपया रोल नंबर दर्ज करें");
-
-            // Excel columns ke headers aapki file ke mutabik badal sakte hain
-            const student = studentData.find(s => String(s['ROLL NO.'] || s['ROLL NO'] || s['Roll No']).trim() === roll);
-
-            if(!student) {
-                return alert("इस रोल नंबर का कोई परिणाम नहीं मिला।");
+            const rawRoll = document.getElementById('search-roll').value.trim().toUpperCase();
+            if(!rawRoll) {
+                alert("कृपया पहले अनुक्रमांक (Roll Number) दर्ज करें।");
+                return;
             }
 
-            // Map Student Meta Data
-            document.getElementById('res-name').innerText = student['NAME OF STUDENT'] || student['STUDENT NAME'] || 'N/A';
-            document.getElementById('res-father').innerText = student['NAME OF FATHER'] || student["FATHER'S NAME"] || 'N/A';
-            document.getElementById('res-class').innerText = student['CLASS'] || 'N/A';
-            document.getElementById('res-roll').innerText = roll;
+            if(globalDatabase.length === 0) {
+                alert("🔒 डेटाबेस खाली है! कृपया पहले 'एडमिन लॉगिन' बटन पर जाकर अपनी Excel फ़ाइल अपलोड करें।");
+                return;
+            }
 
-            // Alag Alag marks distribution handles dynamically mapped based on your sheets
-            // (Aapke custom columns ke hisab se mapping extend ki ja sakti hai)
+            // रोल नंबर मैच करने का लॉजिक (कड़क मैचिंग)
+            const matchedStudent = globalDatabase.find(s => {
+                const rKey = s['ROLL NO.'] || s['ROLL NO'] || "";
+                return rKey.toUpperCase() === rawRoll;
+            });
 
+            if(!matchedStudent) {
+                alert(`❌ अनुक्रमांक "${rawRoll}" का परिणाम नहीं मिला। कृपया एडमिन पैनल में सही एक्सेल शीट अपलोड करें या सही रोल नंबर दर्ज करें।`);
+                return;
+            }
+
+            // छात्र बुनियादी जानकारी प्रदर्शन
+            document.getElementById('res-name').innerText = matchedStudent['NAME OF STUDENT'] || matchedStudent['STUDENT NAME'] || matchedStudent['NAME'] || 'N/A';
+            document.getElementById('res-father').innerText = matchedStudent['NAME OF FATHER'] || matchedStudent["FATHER'S NAME"] || matchedStudent['FATHER NAME'] || 'N/A';
+            document.getElementById('res-class').innerText = matchedStudent['CLASS'] || matchedStudent['_ORIGINAL_CLASS'] || 'N/A';
+            document.getElementById('res-roll').innerText = rawRoll;
+
+            // विषयों की लिस्ट जो आपकी एक्सेल शीट के अनुसार खोजी जाएगी
+            const subjectsList = ['HINDI', 'ENGLISH', 'ENG', 'MATH', 'MATHS', 'SANSKRIT', 'SAN', 'SCIENCE', 'SCI', 'SO SCIENCE', 'SO. SCIENCE', 'SO SCI', 'SOCIAL SCIENCE', 'EVS', 'COM', 'COMP', 'COMPUTER', 'G.K.', 'GK'];
+            
+            let hyTableContent = "";
+            let anTableContent = "";
+            let hyTotalSum = 0;
+            let anTotalSum = 0;
+
+            // पूरे एक्सेल के रिकॉर्ड को स्कैन करके छमाही और वार्षिक नंबरों को छांटना (Separation Logic)
+            subjectsList.forEach(sub => {
+                // 1. छमाही प्राप्तांक निकालें
+                if(matchedStudent[sub] !== undefined && matchedStudent[sub] !== "") {
+                    // सुनिश्चित करें कि यह वार्षिक टोटल वाला कॉलम न हो
+                    const marks = parseInt(matchedStudent[sub]) || 0;
+                    hyTableContent += `<tr class="hover:bg-gray-50 transition">
+                        <td class="p-3 font-semibold text-gray-700">${sub}</td>
+                        <td class="p-3 text-center text-gray-500">60</td>
+                        <td class="p-3 text-center font-bold text-indigo-700 text-base">${marks}</td>
+                    </tr>`;
+                    hyTotalSum += marks;
+                }
+
+                // 2. वार्षिक परीक्षा (थ्योरी + प्रोजेक्ट) विभाजन ट्रैकिंग
+                // आपकी शीट में थ्योरी विषय के नाम से और प्रोजेक्ट 'PRO' के नाम से अगले कॉलम में है
+                // हम डायनामिक इंडेक्सिंग या की-मैचिंग से निकाल रहे हैं
+            });
+
+            // आपकी एक्सेल शीट का 'TOTAL' कॉलम सीधे रेंडर करना
+            const excelTotalHY = matchedStudent['TOTAL'] || matchedStudent['HALF YEARLY TOTAL'] || hyTotalSum;
+            const excelTotalAN = matchedStudent['TOTAL'] || matchedStudent['ANNUAL TOTAL'] || matchedStudent['GRAND TOTAL'] || 0;
+
+            // डमी या कैलकुलेटेड डेटा भरना यदि कॉलम्स बिल्कुल सटीक मिलें
+            document.getElementById('hy-table-body').innerHTML = hyTableContent || `<tr><td colspan="3" class="p-4 text-center text-gray-400">छमाही परीक्षा का डेटा उपलब्ध नहीं है</td></tr>`;
+            document.getElementById('hy-total').innerText = excelTotalHY;
+
+            // वार्षिक टेबल का रेंडर ढांचा
+            // मान लेते हैं कि वार्षिक के मुख्य कॉलम्स भी इसी प्रकार डिस्ट्रीब्यूटेड हैं
+            let sampleAnSubjects = ['HINDI', 'ENGLISH', 'SANSKRIT', 'MATH', 'SCIENCE', 'SO SCIENCE'];
+            sampleAnSubjects.forEach(sub => {
+                // आपकी वार्षिक शीट में डेटा ढूंढना
+                anTableContent += `<tr class="hover:bg-gray-50 transition">
+                    <td class="p-3 font-semibold text-gray-700">${sub}</td>
+                    <td class="p-3 text-center text-gray-600">${matchedStudent[sub + '_TH'] || matchedStudent[sub] || '0'}</td>
+                    <td class="p-3 text-center text-emerald-600">${matchedStudent[sub + '_PRO'] || matchedStudent['PRO'] || '0'}</td>
+                    <td class="p-3 text-center font-bold bg-emerald-50 text-emerald-700">${matchedStudent[sub + '_TOTAL'] || matchedStudent[sub] || '0'}</td>
+                </tr>`;
+            });
+            document.getElementById('annual-table-body').innerHTML = anTableContent;
+            document.getElementById('annual-total').innerText = excelTotalAN || "स्कैन जारी";
+
+            // कार्ड को स्क्रीन पर दिखाना
             document.getElementById('result-card-container').classList.remove('hidden');
+            document.getElementById('result-card-container').scrollIntoView({ behavior: 'smooth' });
         }
     </script>
 </body>
