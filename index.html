@@ -25,7 +25,7 @@
     <nav class="bg-indigo-700 text-white shadow-md no-print">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-2 mx-auto text-center">
-                <span onclick="secretAdminTrigger()" class="text-base md:text-xl font-bold tracking-wide cursor-pointer select-none">नहुष पब्लिक हाई स्कूल - ऑनलाइन परिणाम पोर्टल</span>
+                <span class="text-base md:text-xl font-bold tracking-wide select-none">नहुष पब्लिक हाई स्कूल - ऑनलाइन परिणाम पोर्टल</span>
             </div>
         </div>
     </nav>
@@ -42,13 +42,13 @@
                 
                 <div class="p-5 md:p-6 space-y-4 bg-slate-50">
                     <div class="no-print mb-4 p-3 bg-blue-50 rounded-xl border border-blue-200">
-                        <label class="block text-sm font-bold text-blue-900 mb-1">संचिका संलग्न करें (Upload Excel File):</label>
+                        <label class="block text-sm font-bold text-blue-900 mb-1">संचिका संलग्न करें:</label>
                         <input type="file" id="admin-excel-file" accept=".xlsx, .xls" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"/>
                     </div>
 
                     <div>
-                        <label for="student-roll" class="block text-sm font-semibold text-gray-700 mb-2 text-center">अपना अनुक्रमांक दर्ज करें (Enter Roll Number)</label>
-                        <input type="text" id="student-roll" placeholder="उदाहरण: 101, 205, U1, L1 आदि" class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-lg md:text-xl focus:border-indigo-500 focus:outline-none transition font-bold text-center tracking-wider bg-white">
+                        <label for="student-roll" class="block text-sm font-semibold text-gray-700 mb-2 text-center">अपना अनुक्रमांक दर्ज करें</label>
+                        <input type="text" id="student-roll" placeholder="उदाहरण: 302, 101, U1 आदि" class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-lg md:text-xl focus:border-indigo-500 focus:outline-none transition font-bold text-center tracking-wider bg-white">
                     </div>
 
                     <button onclick="searchStudentResult()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 md:py-3.5 px-4 rounded-xl shadow-md transition transform active:scale-95 flex items-center justify-center space-x-2 text-base md:text-lg">
@@ -73,16 +73,16 @@
                 </div>
 
                 <div class="bg-slate-50 p-4 md:p-5 rounded-xl border border-gray-200 text-xs md:text-sm mb-6">
-                    <h3 class="text-xs font-bold text-indigo-700 uppercase tracking-wider mb-3 border-b border-gray-200 pb-1">विद्यार्थी का विवरण (Student Details)</h3>
+                    <h3 class="text-xs font-bold text-indigo-700 uppercase tracking-wider mb-3 border-b border-gray-200 pb-1">विद्यार्थी का विवरण</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2.5">
-                        <div><span class="text-gray-500 font-medium">अनुक्रमांक (Roll No):</span> <span id="rc-roll" class="font-bold text-gray-900 ml-1"></span></div>
+                        <div><span class="text-gray-500 font-medium">अनुक्रमांक:</span> <span id="rc-roll" class="font-bold text-gray-900 ml-1"></span></div>
                         <div><span class="text-gray-500 font-medium">विद्यार्थी का नाम:</span> <span id="rc-name" class="font-bold text-gray-900 ml-1"></span></div>
                         <div><span class="text-gray-500 font-medium">पिता का नाम:</span> <span id="rc-father" class="font-bold text-gray-900 ml-1"></span></div>
                         <div><span class="text-gray-500 font-medium">माता का नाम:</span> <span id="rc-mother" class="font-bold text-gray-900 ml-1"></span></div>
                         <div><span class="text-gray-500 font-medium">जन्मतिथि:</span> <span id="rc-dob" class="font-bold text-gray-900 ml-1"></span></div>
-                        <div><span class="text-gray-500 font-medium">कक्षा (Class):</span> <span id="rc-class" class="font-bold text-gray-900 ml-1"></span></div>
-                        <div><span class="text-gray-500 font-medium">समग्र आईडी (SSSM ID):</span> <span id="rc-sssm" class="font-bold text-gray-900 ml-1"></span></div>
-                        <div><span class="text-gray-500 font-medium">प्रवेश क्रमांक (Adm No):</span> <span id="rc-adm" class="font-bold text-gray-900 ml-1"></span></div>
+                        <div><span class="text-gray-500 font-medium">कक्षा:</span> <span id="rc-class" class="font-bold text-gray-900 ml-1"></span></div>
+                        <div><span class="text-gray-500 font-medium">समग्र आईडी:</span> <span id="rc-sssm" class="font-bold text-gray-900 ml-1"></span></div>
+                        <div><span class="text-gray-500 font-medium">प्रवेश क्रमांक:</span> <span id="rc-adm" class="font-bold text-gray-900 ml-1"></span></div>
                     </div>
                 </div>
 
@@ -90,9 +90,8 @@
                     <table class="w-full text-left border-collapse text-xs md:text-sm">
                         <thead>
                             <tr class="bg-indigo-50 border-b border-gray-200 text-indigo-950 font-semibold">
-                                <th class="p-3">विषय (Subject)</th>
-                                <th class="p-3 text-center">छः माही परीक्षा (Half Yearly)</th>
-                                <th class="p-3 text-center">वार्षिक परीक्षा (Annual/Project/Total)</th>
+                                <th class="p-3">विषय</th>
+                                <th class="p-3 text-center">परीक्षा प्राप्तांक</th>
                             </tr>
                         </thead>
                         <tbody id="rc-marks-table-body" class="divide-y divide-gray-100 text-gray-700">
@@ -102,16 +101,16 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-gray-200 mb-6">
                     <div class="flex flex-col justify-center items-center p-3 bg-white rounded-lg border border-gray-100 shadow-sm">
-                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">कुल प्राप्तांक / पूर्णांक</span>
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">कुल प्राप्तांक</span>
                         <span id="rc-total-marks" class="text-lg md:text-xl font-black text-indigo-900 mt-1"></span>
                     </div>
                     <div class="flex flex-col justify-center items-center p-3 bg-white rounded-lg border border-gray-100 shadow-sm">
                         <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">परीक्षाफल स्थिति</span>
-                        <div id="rc-outcome" class="text-lg md:text-xl font-extrabold uppercase mt-1">उत्त्तीर्ण (PASS)</div>
+                        <div id="rc-outcome" class="text-lg md:text-xl font-extrabold uppercase mt-1 text-green-600">उत्तीर्ण (PASS)</div>
                     </div>
                 </div>
 
-                <div class="text-center text-xxs text-gray-400 border-t border-gray-100 pt-4 mt-8 no-print">
+                <div class="text-center text-xs text-gray-400 border-t border-gray-100 pt-4 mt-8 no-print">
                     यह एक कंप्यूटर जनित परिणाम पत्रक है। मूल अंकसूची विद्यालय से प्राप्त करें।
                 </div>
             </div>
@@ -135,7 +134,6 @@
                 globalExcelData = {};
                 workbook.SheetNames.forEach(sheetName => {
                     const worksheet = workbook.Sheets[sheetName];
-                    // पूर्ण डेटा को सरणी प्रारूप में प्राप्त करना
                     const json = XLSX.utils.sheet_to_json(worksheet, {header: 1, defval: ""});
                     globalExcelData[sheetName] = json;
                 });
@@ -146,7 +144,7 @@
 
         // परिणाम खोजने की मुख्य प्रक्रिया
         function searchStudentResult() {
-            const rollInput = document.getElementById('student-roll').value.trim();
+            const rollInput = String(document.getElementById('student-roll').value).trim();
             const errorDiv = document.getElementById('search-error');
             const cardContainer = document.getElementById('report-card-container');
             
@@ -167,29 +165,34 @@
 
             let studentFound = null;
             let foundSheetName = "";
-            let headerRow = [];
+            let headerRow = null;
 
             // प्रत्येक पत्रक में छात्र की खोज
             for (let sheetName in globalExcelData) {
                 const rows = globalExcelData[sheetName];
-                let dynamicHeader = [];
                 
-                // मुख्य शीर्षक पंक्ति की पहचान करना
+                // गहरे विश्लेषण के साथ मुख्य शीर्षक पंक्ति (Header Row) ढूँढना
                 for (let i = 0; i < rows.length; i++) {
                     const row = rows[i];
-                    if (row.some(cell => String(cell).toUpperCase().includes("ROLL NO") || String(cell).includes("अनुक्रमांक"))) {
-                        dynamicHeader = row.map(r => String(r).trim().toUpperCase());
-                        headerRow = rows[i];
+                    if (row && row.some(cell => {
+                        const cStr = String(cell).toUpperCase().replace(/\s+/g, '');
+                        return cStr.includes("ROLLNO") || cStr.includes("अनुक्रमांक");
+                    })) {
+                        headerRow = row.map(r => String(r).trim().toUpperCase());
+                        const rollIdx = headerRow.findIndex(h => h.includes("ROLLNO") || h.includes("अनुक्रमांक"));
                         
-                        // छात्र पंक्तियों की जांच
-                        for (let j = i + 1; j < rows.length; j++) {
-                            const studentRow = rows[j];
-                            const rollIndex = dynamicHeader.findIndex(h => h.includes("ROLL NO"));
-                            if (rollIndex !== -1 && studentRow[rollIndex] && String(studentRow[rollIndex]).trim().toUpperCase() === rollInput.toUpperCase()) {
-                                // छात्र का डेटा मिल गया
-                                studentFound = studentRow;
-                                foundSheetName = sheetName;
-                                break;
+                        if (rollIdx !== -1) {
+                            // छात्र पंक्तियों की गहरी जाँच
+                            for (let j = i + 1; j < rows.length; j++) {
+                                const studentRow = rows[j];
+                                if (studentRow && studentRow[rollIdx] !== undefined) {
+                                    const currentRoll = String(studentRow[rollIdx]).trim().toUpperCase();
+                                    if (currentRoll === rollInput.toUpperCase()) {
+                                        studentFound = studentRow;
+                                        foundSheetName = sheetName;
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
@@ -199,12 +202,12 @@
             }
 
             if (!studentFound) {
-                errorDiv.innerText = `अनुक्रमांक "${rollInput}" का परिणाम नहीं मिला। कृपया सही अनुक्रमांक दर्ज करें या अपनी संचिका की जांच करें।`;
+                errorDiv.innerText = `अनुक्रमांक "${rollInput}" का परिणाम नहीं मिला। कृपया सही अनुक्रमांक दर्ज करें।`;
                 errorDiv.classList.remove('hidden');
                 return;
             }
 
-            // डेटा प्रदर्शित करने की प्रक्रिया
+            // डेटा प्रदर्शित करना
             displayStudentCard(headerRow, studentFound, foundSheetName);
         }
 
@@ -212,62 +215,59 @@
         function displayStudentCard(headers, studentRow, className) {
             const cardContainer = document.getElementById('report-card-container');
             
-            // खानों को खोजना
             const getVal = (names) => {
                 for (let name of names) {
-                    const idx = headers.findIndex(h => String(h).trim().toUpperCase().includes(name.toUpperCase()));
-                    if (idx !== -1 && studentRow[idx] !== undefined) return studentRow[idx];
+                    const idx = headers.findIndex(h => h.replace(/\s+/g, '').includes(name.toUpperCase().replace(/\s+/g, '')));
+                    if (idx !== -1 && studentRow[idx] !== undefined) return String(studentRow[idx]).trim();
                 }
                 return "-";
             };
 
             // विद्यार्थी सामान्य जानकारी भरना
-            document.getElementById('rc-roll').innerText = getVal(["ROLL NO", "अनुक्रमांक"]);
-            document.getElementById('rc-name').innerText = getVal(["NAME OF STUDENT", "STUDENT NAME", "नाम"]);
+            document.getElementById('rc-roll').innerText = getVal(["ROLLNO", "अनुक्रमांक"]);
+            document.getElementById('rc-name').innerText = getVal(["NAMEOFSTUDENT", "STUDENTNAME", "नाम"]);
             document.getElementById('rc-father').innerText = getVal(["FATHER", "पिता"]);
             document.getElementById('rc-mother').innerText = getVal(["MOTHER", "माता"]);
-            document.getElementById('rc-dob').innerText = getVal(["BIRTH DATE", "DOB", "जन्मतिथि", "DATE OF BIRTH"]);
+            document.getElementById('rc-dob').innerText = getVal(["BIRTHDATE", "DOB", "जन्मतिथि"]);
             document.getElementById('rc-class').innerText = className;
-            document.getElementById('rc-sssm').innerText = getVal(["SSSM ID", "समग्र"]);
-            document.getElementById('rc-adm').innerText = getVal(["ADMISSION NO", "ADD NO", "प्रवेश"]);
+            document.getElementById('rc-sssm').innerText = getVal(["SSSMID", "समग्र"]);
+            document.getElementById('rc-adm').innerText = getVal(["ADMISSIONNO", "ADDNO", "प्रवेश"]);
 
             // अंक तालिका बनाना
             const tableBody = document.getElementById('rc-marks-table-body');
             tableBody.innerHTML = "";
 
-            // विषयों की सूची जो आपकी संचिका में उपस्थित हैं
-            const subjects = ["HINDI", "ENGLISH", "MATH", "EVS", "COM", "SCIENCE", "SO SCIENCE", "SANSKRIT", "GK"];
-            let grandTotalObtained = 0;
-            let grandTotalMax = 0;
+            // मुख्य विषयों की सूची
+            const subjects = ["HINDI", "ENGLISH", "MATH", "EVS", "COM", "SCIENCE", "SOSCIENCE", "SANSKRIT", "GK"];
+            let calculatedTotal = 0;
 
             headers.forEach((header, index) => {
-                const cleanHeader = String(header).trim().toUpperCase();
+                const cleanHeader = String(header).trim().toUpperCase().replace(/\s+/g, '');
                 
-                // यदि यह एक विषय का खाना है और उसमें खाली मान नहीं है
-                if (subjects.some(sub => cleanHeader === sub || cleanHeader.startsWith(sub + " "))) {
+                // विषयों के प्राप्तांकों को जोड़ना (बिना वार्षिक/छःमाही के झंझट के)
+                if (subjects.some(sub => cleanHeader === sub) && !cleanHeader.includes("TOTAL")) {
                     const marks = studentRow[index] || "0";
                     
                     let tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50 transition";
+                    tr.className = "hover:bg-slate-50 transition border-b border-gray-100";
                     tr.innerHTML = `
                         <td class="p-3 font-semibold text-gray-900">${header}</td>
-                        <td class="p-3 text-center text-gray-500">-</td>
                         <td class="p-3 text-center font-bold text-indigo-950">${marks}</td>
                     `;
                     tableBody.appendChild(tr);
 
                     if (!isNaN(parseFloat(marks))) {
-                        grandTotalObtained += parseFloat(marks);
+                        calculatedTotal += parseFloat(marks);
                     }
                 }
             });
 
-            // कुल योग और परिणाम स्थिति दिखाना
-            const totalVal = getVal(["TOTAL", "GRAND TOTAL"]);
+            // कुल योग प्रदर्शित करना
+            const totalVal = getVal(["TOTAL", "GRANDTOTAL"]);
             if (totalVal !== "-") {
                 document.getElementById('rc-total-marks').innerText = totalVal;
             } else {
-                document.getElementById('rc-total-marks').innerText = grandTotalObtained;
+                document.getElementById('rc-total-marks').innerText = calculatedTotal;
             }
 
             cardContainer.classList.remove('hidden');
